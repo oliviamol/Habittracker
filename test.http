@@ -1,0 +1,40 @@
+### 1. Test fără token (Trebuie să dea eroare 401)
+GET http://localhost:3000/habits
+
+### ---
+
+### 2. Vezi obiceiurile lui Alice (Token valid)
+GET http://localhost:3000/habits
+Authorization: secret-token-alice
+
+### ---
+
+### 3. Adaugă un obicei nou pentru Alice (Idempotency Test)
+POST http://localhost:3000/habits
+Authorization: secret-token-alice
+Content-Type: application/json
+
+{
+  "name": "Citit 30 min",
+  "frequency": "daily",
+  "idempotencyKey": "test-key-001"
+}
+
+### ---
+
+### 4. Trimite EXACT aceeași cerere (Trebuie să detecteze duplicatul - Idempotency)
+POST http://localhost:3000/habits
+Authorization: secret-token-alice
+Content-Type: application/json
+
+{
+  "name": "Citit 30 min",
+  "frequency": "daily",
+  "idempotencyKey": "test-key-001"
+}
+
+### ---
+
+### 5. Vezi obiceiurile lui Bob (Să verifici izolarea datelor - Bob nu trebuie să vadă obiceiurile lui Alice)
+GET http://localhost:3000/habits
+Authorization: secret-token-bob

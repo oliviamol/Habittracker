@@ -1,0 +1,12 @@
+{
+  "name": "habit-tracker-api",
+  "version": "1.0.0",
+  "description": "Habit Tracker backend with auth, data isolation, and idempotency",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
