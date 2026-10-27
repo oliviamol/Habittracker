@@ -145,7 +145,6 @@
             <p>Interfață vizuală pentru API-ul tău de pe Render</p>
         </header>
 
-        <!-- CONFIGURARE API & TOKEN -->
         <div class="card">
             <h2>1. Configurare Conexiune</h2>
             <div class="form-group">
@@ -153,17 +152,16 @@
                 <input type="text" id="apiUrl" value="https://habittracker-cb70.onrender.com">
             </div>
             <div class="form-group">
-                <label for="token">Token Autentificare (ex: secret-token-alice):</label>
-                <input type="text" id="token" placeholder="secret-token-alice">
+                <label for="token">Token Autentificare:</label>
+                <input type="text" id="token" value="secret-token-alice">
             </div>
         </div>
 
-        <!-- ADAUGĂ OBICEI -->
         <div class="card">
             <h2>2. Adaugă un Obicei (Idempotent)</h2>
             <div class="form-group">
                 <label for="habitName">Nume Obicei:</label>
-                <input type="text" id="habitName" placeholder="Ex: Citit 30 de minute">
+                <input type="text" id="habitName" placeholder="Ex: Bea apa">
             </div>
             <div class="form-group">
                 <label for="habitFreq">Frecvență:</label>
@@ -179,7 +177,6 @@
             <button onclick="createHabit()">Adaugă Obicei</button>
         </div>
 
-        <!-- LISTĂ OBICEIURI -->
         <div class="card">
             <h2>3. Obiceiurile Mele</h2>
             <button onclick="fetchHabits()" style="margin-bottom: 15px; background-color: #8c8286;">Încarcă / Reîmprospătează Lista</button>
@@ -201,7 +198,7 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Eroare ${response.status}: Neautorizat sau eroare server`);
+                    throw new Error('Eroare la preluarea datelor (Verifică token-ul)');
                 }
 
                 const habits = await response.json();
@@ -235,7 +232,7 @@
             const idempotencyKey = document.getElementById('idempotencyKey').value;
 
             if (!name) {
-                alert('Te rog introdu un nume pentru obicei!');
+                alert('Introdu un nume pentru obicei!');
                 return;
             }
 
@@ -254,7 +251,7 @@
                     alert('Eroare: ' + (data.error || JSON.stringify(data)));
                 } else {
                     alert('Obicei adăugat cu succes!');
-                    document.getElementById('idempotencyKey').value = 'key-' + Math.random().toString(36.substring(7));
+                    document.getElementById('idempotencyKey').value = 'key-' + Math.random().toString(36).substring(7);
                     fetchHabits();
                 }
             } catch (err) {
