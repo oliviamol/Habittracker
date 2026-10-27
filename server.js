@@ -5,7 +5,7 @@ const app = express();
 app.use(express.static('.'));
 app.use(express.json());
 
-//verivying the tokens
+//verifying the tokens
 const authenticate = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
