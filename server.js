@@ -5,7 +5,7 @@ const app = express();
 app.use(express.static('.'));
 app.use(express.json());
 
-//verifying the tokens
+//verivying the tokens
 const authenticate = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
@@ -50,9 +50,10 @@ try {
     //Idempotency check
     const existing = db.prepare('SELECT * FROM habits WHERE idempotency_key = ? AND user_id = ?').get(idempotencyKey, req.user.id);
 
+   
     if (existing) {
       return res.status(200).json({
-        message: "Duplicate request detected. Returning original result (idempotent safe retry).",
+        message: "This habit has already been added using this idempotency key.",
         habit: { id: existing.id, name: existing.name, frequency: existing.frequency }
       });
     }
