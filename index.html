@@ -207,7 +207,7 @@
                 if (!response.ok) {
                     alert('Error: ' + (data.error || JSON.stringify(data)));
                 } else {
-                    alert('Habit added successfully!');
+                    alert(data.message || 'Habit processed successfully!');
                    
                     fetchHabits();
                 }
