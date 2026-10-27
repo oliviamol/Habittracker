@@ -208,7 +208,7 @@
                     alert('Error: ' + (data.error || JSON.stringify(data)));
                 } else {
                     alert('Habit added successfully!');
-                    document.getElementById('idempotencyKey').value = 'key-' + Math.random().toString(36).substring(7);
+                   
                     fetchHabits();
                 }
             } catch (err) {
