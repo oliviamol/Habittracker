@@ -184,7 +184,7 @@
         async function createHabit() {
             const url = document.getElementById('apiUrl').value.replace(/\/$/, '') + '/habits';
             const token = document.getElementById('token').value;
-            const name = document.getElementById('habitName').value;
+            const name = document.getElementById('habitName').value.trim(); 
             const frequency = document.getElementById('habitFreq').value;
             const idempotencyKey = document.getElementById('idempotencyKey').value;
 
