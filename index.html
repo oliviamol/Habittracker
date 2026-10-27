@@ -188,10 +188,12 @@
             const frequency = document.getElementById('habitFreq').value;
             const idempotencyKey = document.getElementById('idempotencyKey').value;
 
-            if (!name) {
-                alert('Please enter a name for the habit!');
+            
+                if (!name) {
+                alert('Validation error: Habit name cannot be empty!');
                 return;
             }
+            
 
             try {
                 const response = await fetch(url, {
