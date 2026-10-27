@@ -12,7 +12,7 @@ A simple backend API built with Node.js, Express, and SQLite for tracking habits
 
 ## Test Accounts
 
-You can use these tokens to test the API:
+You can use these tokens to test the API :
 
 - **Alice:** `secret-token-alice`
 - **Bob:** `secret-token-bob`
