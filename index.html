@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #fcf6f7;
+            --card-bg: #ffffff;
+            --text-color: #4a4547;
+            --primary-color: #d4a5b8;
+            --primary-hover: #c292a5;
+            --border-color: #e8d7de;
+            --input-bg: #faf4f6;
+            --shadow: 0 4px 15px rgba(212, 165, 184, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: #7d5a6b;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #8c8286;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: #7d5a6b;
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #6b6265;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .habits-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .habit-item {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .habit-info h4 {
+            margin: 0 0 4px 0;
+            color: #594e52;
+        }
+
+        .habit-info span {
+            font-size: 0.8rem;
+            color: #8c8286;
+            background: #e8d7de;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Habit Tracker Dashboard</h1>
+            <p>Interfață vizuală pentru API-ul tău de pe Render</p>
+        </header>
+
+        <!-- CONFIGURARE API & TOKEN -->
+        <div class="card">
+            <h2>1. Configurare Conexiune</h2>
+            <div class="form-group">
+                <label for="apiUrl">Link API Render:</label>
+                <input type="text" id="apiUrl" value="https://habittracker-cb70.onrender.com">
+            </div>
+            <div class="form-group">
+                <label for="token">Token Autentificare (ex: secret-token-alice):</label>
+                <input type="text" id="token" placeholder="secret-token-alice">
+            </div>
+        </div>
+
+        <!-- ADAUGĂ OBICEI -->
+        <div class="card">
+            <h2>2. Adaugă un Obicei (Idempotent)</h2>
+            <div class="form-group">
+                <label for="habitName">Nume Obicei:</label>
+                <input type="text" id="habitName" placeholder="Ex: Citit 30 de minute">
+            </div>
+            <div class="form-group">
+                <label for="habitFreq">Frecvență:</label>
+                <select id="habitFreq">
+                    <option value="daily">Zilnic (Daily)</option>
+                    <option value="weekly">Săptămânal (Weekly)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="idempotencyKey">Cheie Idempotență (Unică):</label>
+                <input type="text" id="idempotencyKey" value="key-test-1">
+            </div>
+            <button onclick="createHabit()">Adaugă Obicei</button>
+        </div>
+
+        <!-- LISTĂ OBICEIURI -->
+        <div class="card">
+            <h2>3. Obiceiurile Mele</h2>
+            <button onclick="fetchHabits()" style="margin-bottom: 15px; background-color: #8c8286;">Încarcă / Reîmprospătează Lista</button>
+            <ul id="habitsList" class="habits-list">
+                <li class="habit-item"><span style="color: #8c8286;">Apasă pe butonul de deasupra pentru a încărca datele...</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function fetchHabits() {
+            const url = document.getElementById('apiUrl').value.replace(/\/$/, '') + '/habits';
+            const token = document.getElementById('token').value;
+            const listEl = document.getElementById('habitsList');
+
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Eroare ${response.status}: Neautorizat sau eroare server`);
+                }
+
+                const habits = await response.json();
+                listEl.innerHTML = '';
+
+                if (habits.length === 0) {
+                    listEl.innerHTML = '<li class="habit-item">Nu există obiceiuri salvate.</li>';
+                    return;
+                }
+
+                habits.forEach(h => {
+                    listEl.innerHTML += `
+                        <li class="habit-item">
+                            <div class="habit-info">
+                                <h4>${h.name}</h4>
+                                <span>${h.frequency}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+            } catch (err) {
+                listEl.innerHTML = `<li class="habit-item" style="color: #b85c75;">${err.message}</li>`;
+            }
+        }
+
+        async function createHabit() {
+            const url = document.getElementById('apiUrl').value.replace(/\/$/, '') + '/habits';
+            const token = document.getElementById('token').value;
+            const name = document.getElementById('habitName').value;
+            const frequency = document.getElementById('habitFreq').value;
+            const idempotencyKey = document.getElementById('idempotencyKey').value;
+
+            if (!name) {
+                alert('Te rog introdu un nume pentru obicei!');
+                return;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, frequency, idempotencyKey })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    alert('Eroare: ' + (data.error || JSON.stringify(data)));
+                } else {
+                    alert('Obicei adăugat cu succes!');
+                    document.getElementById('idempotencyKey').value = 'key-' + Math.random().toString(36.substring(7));
+                    fetchHabits();
+                }
+            } catch (err) {
+                alert('Eroare de rețea: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
